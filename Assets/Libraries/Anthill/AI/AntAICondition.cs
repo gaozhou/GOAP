@@ -3,8 +3,8 @@ namespace Anthill.AI
 	public class AntAICondition
 	{
 		public string Name;
-		public int Values;
-		public int Mask;
+		private int _values;
+		private int _mask;
 		// public bool[] values;
 		// public bool[] mask;
 
@@ -12,8 +12,8 @@ namespace Anthill.AI
 
 		public void Clear()
 		{
-			Values = 0;
-			Mask = 0;
+			_values = 0;
+			_mask = 0;
 		}
 
 		public void BeginUpdate(AntAIPlanner aPlanner)
@@ -34,7 +34,7 @@ namespace Anthill.AI
 		public bool Has(AntAIPlanner aPlanner, string aAtomName)
 		{
 			var index = aPlanner.GetAtomIndex(aAtomName);
-			return  (index >= 0 && index < AntAIPlanner.MAX_ATOMS) && (Values & 1 << index) > 0;
+			return  (index >= 0 && index < AntAIPlanner.MAX_ATOMS) && (_values & 1 << index) > 0;
 		}
 
 		public bool Set(string aAtomName, bool aValue)
@@ -52,9 +52,9 @@ namespace Anthill.AI
 			if (aIndex < 0 || aIndex >= AntAIPlanner.MAX_ATOMS)
 				return false;
 			
-			Values &= ~(1 << aIndex);
-			Values |= aValue ? 1 << aIndex : 0;
-			Mask |= 1 << aIndex;
+			_values &= ~(1 << aIndex);
+			_values |= aValue ? 1 << aIndex : 0;
+			_mask |= 1 << aIndex;
 			return true;
 		}
 
@@ -63,7 +63,7 @@ namespace Anthill.AI
 			var dist = 0;
 			for (var i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				if ((aOther.Mask & (1 << i)) > 0 && (Values & (1 << i)) != (aOther.Values & (1 << i)))
+				if ((aOther._mask & (1 << i)) > 0 && (_values & (1 << i)) != (aOther._values & (1 << i)))
 				{
 					dist++;
 				}
@@ -75,7 +75,7 @@ namespace Anthill.AI
 		{
 			for (var i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				if ((Mask & (1 << i)) > 0 && (aOther.Mask & (1 << i)) > 0 && (Values & (1 << i)) != (aOther.Values & (1 << i)))
+				if ((_mask & (1 << i)) > 0 && (aOther._mask & (1 << i)) > 0 && (_values & (1 << i)) != (aOther._values & (1 << i)))
 				{
 					return false;
 				}
@@ -85,33 +85,33 @@ namespace Anthill.AI
 
 		public bool GetMask(int aIndex)
 		{
-			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) && (Mask & (1 << aIndex)) > 0;
+			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) && (_mask & (1 << aIndex)) > 0;
 		}
 
 		public bool GetValue(int aIndex)
 		{
-			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) && (Values & (1 << aIndex)) > 0;
+			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) && (_values & (1 << aIndex)) > 0;
 		}
 
 		public AntAICondition Clone()
 		{
 			return new AntAICondition
 			{
-				Values = Values,
-				Mask = Mask,
+				_values = _values,
+				_mask = _mask,
 			};
 		}
 
 		public void Act(AntAICondition aPost)
 		{
-			Mask |= aPost.Mask;
-			Values &= ~aPost.Mask;
-			Values |= aPost.Mask & aPost.Values;
+			_mask |= aPost._mask;
+			_values &= ~aPost._mask;
+			_values |= aPost._mask & aPost._values;
 		}
 
 		public bool Equals(AntAICondition aCondition)
 		{
-			return Values == aCondition.Values;
+			return _values == aCondition._values;
 		}
 
 		public bool[] Description()
@@ -119,7 +119,7 @@ namespace Anthill.AI
 			var result = new bool[AntAIPlanner.MAX_ATOMS];
 			for (var i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				result[i] = (Mask & Values & (1 << i)) > 0;
+				result[i] = (_mask & _values & (1 << i)) > 0;
 			}
 			return result;
 		}
