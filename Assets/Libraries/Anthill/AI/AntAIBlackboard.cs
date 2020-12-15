@@ -26,10 +26,10 @@ namespace Anthill.AI
 
 		public AntAIBlackboardProp Remove(string aKey)
 		{
-			AntAIBlackboardProp result = null;
 			if (!_dict.ContainsKey(aKey)) 
-				return result;
-			result = _dict[aKey];
+				return null;
+			
+			var result = _dict[aKey];
 			_dict.Remove(aKey);
 			if (EventPropertyRemoved != null)
 			{
