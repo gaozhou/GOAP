@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Anthill.AI
@@ -18,25 +19,24 @@ namespace Anthill.AI
 		public event ValueUpdateDelegate EventChanging;
 		public event ValueUpdateDelegate EventChanged; 
 
-		public string _strValue;
-		public float _floatValue;
-		public int _intValue;
-		public bool _boolValue;
-		public Vector2 _vec2Value;
-		public Vector3 _vec3Value;
-		public ValueType _type;
+		private string _strValue;
+		private float _floatValue;
+		private int _intValue;
+		private bool _boolValue;
+		private Vector2 _vec2Value;
+		private Vector3 _vec3Value;
 
 		public AntAIBlackboardProp()
 		{
-			_type = ValueType.String;
+			Type = ValueType.String;
 		}
 
 		#region Public Methods
 
 		public override string ToString()
 		{
-			string result = "";
-			switch (_type)
+			var result = "";
+			switch (Type)
 			{
 				case ValueType.String :
 					result = _strValue;
@@ -66,6 +66,8 @@ namespace Anthill.AI
 						_vec3Value.y.ToString("0.00"), ", ",
 						_vec3Value.z.ToString("0.00"));
 				break;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 			return result;
 		}
@@ -73,10 +75,7 @@ namespace Anthill.AI
 		#endregion
 		#region Getters/Setters
 
-		public ValueType Type
-		{
-			get { return _type; }
-		}
+		public ValueType Type { get; private set; }
 
 		public string Value
 		{
@@ -88,7 +87,7 @@ namespace Anthill.AI
 					EventChanging(this);
 				}
 
-				_type = ValueType.String;
+				Type = ValueType.String;
 				_strValue = value;
 				if (EventChanged != null)
 				{
@@ -107,7 +106,7 @@ namespace Anthill.AI
 					EventChanging(this);
 				}
 
-				_type = ValueType.Float;
+				Type = ValueType.Float;
 				_floatValue = value;
 				if (EventChanged != null)
 				{
@@ -126,7 +125,7 @@ namespace Anthill.AI
 					EventChanging(this);
 				}
 
-				_type = ValueType.Int;
+				Type = ValueType.Int;
 				_intValue = value;
 				if (EventChanged != null)
 				{
@@ -145,7 +144,7 @@ namespace Anthill.AI
 					EventChanging(this);
 				}
 
-				_type = ValueType.Bool;
+				Type = ValueType.Bool;
 				_boolValue = value;
 				if (EventChanged != null)
 				{
@@ -164,7 +163,7 @@ namespace Anthill.AI
 					EventChanging(this);
 				}
 
-				_type = ValueType.Vec2;
+				Type = ValueType.Vec2;
 				_vec2Value = value;
 				if (EventChanged != null)
 				{
@@ -183,7 +182,7 @@ namespace Anthill.AI
 					EventChanging(this);
 				}
 
-				_type = ValueType.Vec3;
+				Type = ValueType.Vec3;
 				_vec3Value = value;
 				if (EventChanged != null)
 				{

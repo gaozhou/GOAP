@@ -62,9 +62,10 @@ namespace Anthill.AI
 
 		public AntAIScenarioCondition Clone()
 		{
-			var clone = new AntAIScenarioCondition();
-			clone.list = new AntAIScenarioConditionItem[list.Length];
-			clone.serialId = serialId;
+			var clone = new AntAIScenarioCondition
+			{
+				list = new AntAIScenarioConditionItem[list.Length], serialId = serialId
+			};
 			for (int i = 0, n = list.Length; i < n; i++)
 			{
 				clone.list[i] = list[i];
@@ -74,13 +75,13 @@ namespace Anthill.AI
 
 		public string GetName(int aIndex)
 		{
-			int index = Array.FindIndex(list, x => x.id == aIndex);
+			var index = Array.FindIndex(list, aX => aX.id == aIndex);
 			return (index >= 0 && index < list.Length) ? list[index].name : null;
 		}
 
 		public int GetID(string aConditionName)
 		{
-			int index = Array.FindIndex(list, x => x.name.Equals(aConditionName));
+			var index = Array.FindIndex(list, aX => aX.name.Equals(aConditionName));
 			return (index >= 0 && index < list.Length) ? list[index].id : -1;
 		}
 

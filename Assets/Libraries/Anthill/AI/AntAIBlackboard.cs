@@ -10,12 +10,7 @@ namespace Anthill.AI
 		public event PropertyUpdateDelegate EventPropertyAdded;
 		public event PropertyUpdateDelegate EventPropertyRemoved;
 
-		private Dictionary<string, AntAIBlackboardProp> _dict;
-
-		public AntAIBlackboard()
-		{
-			_dict = new Dictionary<string, AntAIBlackboardProp>();
-		}
+		private readonly Dictionary<string, AntAIBlackboardProp> _dict = new Dictionary<string, AntAIBlackboardProp>();
 
 		#region Public Methods
 
@@ -32,14 +27,13 @@ namespace Anthill.AI
 		public AntAIBlackboardProp Remove(string aKey)
 		{
 			AntAIBlackboardProp result = null;
-			if (_dict.ContainsKey(aKey))
+			if (!_dict.ContainsKey(aKey)) 
+				return result;
+			result = _dict[aKey];
+			_dict.Remove(aKey);
+			if (EventPropertyRemoved != null)
 			{
-				result = _dict[aKey];
-				_dict.Remove(aKey);
-				if (EventPropertyRemoved != null)
-				{
-					EventPropertyRemoved(aKey, result);
-				}
+				EventPropertyRemoved(aKey, result);
 			}
 			return result;
 		}
@@ -60,7 +54,7 @@ namespace Anthill.AI
 			}
 			set
 			{
-				string key = _dict.ElementAt(aIndex).Key;
+				var key = _dict.ElementAt(aIndex).Key;
 				_dict[key] = value;
 			}
 		}
@@ -73,17 +67,15 @@ namespace Anthill.AI
 				{
 					return _dict[aKey];
 				}
-				else
-				{
-					var prop = new AntAIBlackboardProp();
-					_dict.Add(aKey, prop);
-					if (EventPropertyAdded != null)
-					{
-						EventPropertyAdded(aKey, prop);
-					}
 
-					return prop;
+				var prop = new AntAIBlackboardProp();
+				_dict.Add(aKey, prop);
+				if (EventPropertyAdded != null)
+				{
+					EventPropertyAdded(aKey, prop);
 				}
+
+				return prop;
 			}
 			set
 			{
@@ -106,12 +98,13 @@ namespace Anthill.AI
 		{
 			get
 			{
-				int count = 0;
-				foreach (var prop in _dict)
-				{
-					count++;
-				}
-				return count;
+				return _dict.Count;
+				// var count = 0;
+				// foreach (var prop in _dict)
+				// {
+				// 	count++;
+				// }
+				// return count;
 			}
 		}
 

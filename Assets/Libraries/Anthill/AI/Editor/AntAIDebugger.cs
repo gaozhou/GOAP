@@ -94,7 +94,7 @@ namespace Anthill.AI
 
 					if (_agent != null)
 					{
-						_agent.planner.EventPlanUpdated -= OnPlanUpdated;
+						_agent.Planner.EventPlanUpdated -= OnPlanUpdated;
 						_agent = null;
 					}
 				}
@@ -121,7 +121,7 @@ namespace Anthill.AI
 					
 					RebuildBlackboardNode(_totalDrag + _planNodesPosition);
 
-					_agent.planner.EventPlanUpdated += OnPlanUpdated;
+					_agent.Planner.EventPlanUpdated += OnPlanUpdated;
 				}
 			}
 
@@ -192,9 +192,9 @@ namespace Anthill.AI
 			// какие действия были связаны с задачами, а какие нет.
 			AntAIAction action;
 			var unusedActions = new List<KeyValuePair<AntAIAction, bool>>();
-			for (int i = 0, n = _agent.planner.actions.Count; i < n; i++)
+			for (int i = 0, n = _agent.Planner.Actions.Count; i < n; i++)
 			{
-				action = _agent.planner.actions[i];
+				action = _agent.Planner.Actions[i];
 				unusedActions.Add(new KeyValuePair<AntAIAction, bool>(action, false));
 			}
 
@@ -212,17 +212,17 @@ namespace Anthill.AI
 			var unusedStates = new List<AntAIState>(); // Список задач которые не связаны с действиями.
 			var toLinkNodes = new List<AntAIDebuggerNode>();
 
-			for (int i = 0, n = _agent.states.Length; i < n; i++)
+			for (int i = 0, n = _agent.States.Length; i < n; i++)
 			{
-				state = _agent.states[i];
+				state = _agent.States[i];
 				toLinkNodes.Clear();
 				foundCount = 0;
 				totalWidth = 0.0f;
 				totalHeight = 0.0f;
-				for (int j = 0, nj = _agent.planner.actions.Count; j < nj; j++)
+				for (int j = 0, nj = _agent.Planner.Actions.Count; j < nj; j++)
 				{
-					action = _agent.planner.actions[j];
-					if (action.state.Equals(state.name))
+					action = _agent.Planner.Actions[j];
+					if (action.State.Equals(state.Name))
 					{
 						int id = unusedActions.FindIndex(x => System.Object.ReferenceEquals(x.Key, action));
 						unusedActions[id] = new KeyValuePair<AntAIAction, bool>(action, true);
@@ -250,7 +250,7 @@ namespace Anthill.AI
 						statePos = new Vector2(aNodePosition.x - totalWidth, aNodePosition.y + totalHeight);
 					}
 
-					isDefaultState = System.Object.ReferenceEquals(_agent.defaultState, state);
+					isDefaultState = System.Object.ReferenceEquals(_agent.DefaultState, state);
 					stateNode = CreateStateNode(state, statePos, isDefaultState);
 					stateNode.SetInput(stateNode.rect.width * 0.5f, 10.0f);
 					for (int j = 0, nj = toLinkNodes.Count; j < nj; j++)
@@ -280,7 +280,7 @@ namespace Anthill.AI
 					totalHeight = actionNode.rect.height;
 
 					statePos = new Vector2(aNodePosition.x - totalWidth, aNodePosition.y + totalHeight);
-					stateNode = CreateMissingStateNode(unusedActions[i].Key.state, statePos);
+					stateNode = CreateMissingStateNode(unusedActions[i].Key.State, statePos);
 					stateNode.SetInput(stateNode.rect.width * 0.5f, 10.0f);
 					actionNode.LinkTo(stateNode, new Color(0.7f, 0.2f, 0.3f));
 
@@ -296,7 +296,7 @@ namespace Anthill.AI
 			statePos = aNodePosition;
 			for (int i = 0, n = unusedStates.Count; i < n; i++)
 			{
-				isDefaultState = System.Object.ReferenceEquals(_agent.defaultState, unusedStates[i]);
+				isDefaultState = System.Object.ReferenceEquals(_agent.DefaultState, unusedStates[i]);
 				stateNode = CreateStateNode(unusedStates[i], statePos, isDefaultState);
 				stateNode.SetInput(stateNode.rect.width * 0.5f, 10.0f);
 				statePos.y += stateNode.rect.height;
@@ -312,7 +312,7 @@ namespace Anthill.AI
 		{
 			for (int i = 0, n = _goalNodes.Count; i < n; i++)
 			{
-				_goalNodes[i].IsHighlighted = _goalNodes[i].value.Equals(_agent.currentGoal.name);
+				_goalNodes[i].IsHighlighted = _goalNodes[i].value.Equals(_agent.CurrentGoal.Name);
 			}
 		}
 
@@ -320,14 +320,14 @@ namespace Anthill.AI
 		{
 			aMaxHeight = 0.0f;
 			AntAIDebuggerNode goalNode;
-			for (int i = 0, n = _agent.planner.goals.Count; i < n; i++)
+			for (int i = 0, n = _agent.Planner.Goals.Count; i < n; i++)
 			{
-				goalNode = CreateGoalNode(_agent.planner.goals[i], ref aNodePosition);
+				goalNode = CreateGoalNode(_agent.Planner.Goals[i], ref aNodePosition);
 				aMaxHeight = (goalNode.rect.height > aMaxHeight) 
 					? goalNode.rect.height 
 					: aMaxHeight;
 
-				goalNode.value = _agent.planner.goals[i].name;
+				goalNode.value = _agent.Planner.Goals[i].Name;
 				_goalNodes.Add(goalNode);
 			}
 		}
@@ -345,25 +345,25 @@ namespace Anthill.AI
 			if (_genericNodes.Count > 0)
 			{
 				node = _genericNodes[curIndex];
-				UpdateWorldStateNode(_agent.planner.debugConditions, node);
+				UpdateWorldStateNode(_agent.Planner.DebugConditions, node);
 				node.isActive = true;
 				node.rect.x = aNodePosition.x;
 				aNodePosition.x += node.rect.width;
 			}
 			else
 			{
-				node = CreateWorldStateNode(_agent.planner.debugConditions, ref aNodePosition);
+				node = CreateWorldStateNode(_agent.Planner.DebugConditions, ref aNodePosition);
 			}
 
 			curIndex++;
 			AntAIAction action;
-			AntAICondition conditions = _agent.planner.debugConditions;
+			AntAICondition conditions = _agent.Planner.DebugConditions;
 			AntAICondition prevConditions;
 			for (int i = 0, n = _currentPlan.Count; i < n; i++)
 			{
-				action = _agent.planner.GetAction(_currentPlan[i]);
+				action = _agent.Planner.GetAction(_currentPlan[i]);
 				prevConditions = conditions.Clone();
-				conditions.Act(action.post);
+				conditions.Act(action.Post);
 				if (curIndex < _genericNodes.Count)
 				{
 					node = _genericNodes[curIndex];
@@ -483,17 +483,17 @@ namespace Anthill.AI
 			if (isDefault)
 			{
 				title = string.Format("<b><color={1}>STATE</color> '<color={2}>{0}</color>'</b>\n\r   <color=#51a9b0>This is Default state</color>", 
-					aState.name, _titleColor, _nameColor);
+					aState.Name, _titleColor, _nameColor);
 				height += 14.0f;
 			}
 			else
 			{
 				title = string.Format("<b><color={1}>STATE</color> '<color={2}>{0}</color>'</b>", 
-					aState.name, _titleColor, _nameColor);
+					aState.Name, _titleColor, _nameColor);
 			}
 
 			AntAIDebuggerNode node = AddNode(title, 220.0f, height, _stateStyle, _stateStyle, ref aNodePosition);
-			node.value = aState.name;
+			node.value = aState.Name;
 			return node;
 		}
 
@@ -502,27 +502,27 @@ namespace Anthill.AI
 			bool value = false;
 			var desc = new List<string>();
 			desc.Add(string.Format("<b><color={2}>ACTION</color> '<color={3}>{0}</color>'</b> [{1}]", 
-				aAction.name, aAction.cost, _titleColor, _nameColor));
+				aAction.Name, aAction.Cost, _titleColor, _nameColor));
 			desc.Add("   <b>Pre Conditions</b>");
 
 			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				if (aAction.pre.GetMask(i))
+				if (aAction.Pre.GetMask(i))
 				{
-					value = aAction.pre.GetValue(i);
+					value = aAction.Pre.GetValue(i);
 					desc.Add(string.Format("      '<color={2}>{0}</color>' = <color={2}>{1}</color>", 
-						_agent.planner.atoms[i], value, (value) ? _trueColor : _falseColor));
+						_agent.Planner.Atoms[i], value, (value) ? _trueColor : _falseColor));
 				}
 			}
 
 			desc.Add("   <b>Post Conditions</b>");
 			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				if (aAction.post.GetMask(i))
+				if (aAction.Post.GetMask(i))
 				{
-					value = aAction.post.GetValue(i);
+					value = aAction.Post.GetValue(i);
 					desc.Add(string.Format("      '<color={2}>{0}</color>' = <color={2}>{1}</color>", 
-						_agent.planner.atoms[i], value, (value) ? _trueColor : _falseColor));
+						_agent.Planner.Atoms[i], value, (value) ? _trueColor : _falseColor));
 				}
 			}
 
@@ -547,7 +547,7 @@ namespace Anthill.AI
 				{
 					value = aCondition.GetValue(i);
 					aResult.Add(string.Format("      '<color={2}>{0}</color>' = <color={2}>{1}</color>", 
-						_agent.planner.atoms[i], value, (value) ? _trueColor : _falseColor));
+						_agent.Planner.Atoms[i], value, (value) ? _trueColor : _falseColor));
 				}
 			}
 		}
@@ -559,7 +559,7 @@ namespace Anthill.AI
 		{
 			List<string> desc = new List<string>();
 			desc.Add(string.Format("<b><color={1}>GOAL</color> '<color={2}>{0}</color>'</b>",
-				aGoal.name, _titleColor, _nameColor));
+				aGoal.Name, _titleColor, _nameColor));
 			desc.Add("   <b>Tends to conditions</b>");
 			DescribeCondition(aGoal, ref desc);
 
@@ -622,7 +622,7 @@ namespace Anthill.AI
 		{
 			var lines = new List<string>();
 			lines.Add(string.Format("<b><color={1}>ACTION</color> '<color={2}>{0}</color>'</b>", 
-				aCur.name, _titleColor, _nameColor));
+				aCur.Name, _titleColor, _nameColor));
 			lines.Add("   <b>Post Conditions</b>");
 
 			bool value;
@@ -634,12 +634,12 @@ namespace Anthill.AI
 					if (value != aPre.GetValue(j))
 					{
 						lines.Add(string.Format("      <color=#a873dd><b>></b></color> <i>'<color={2}>{0}</color>' = <color={2}>{1}</color></i>", 
-							_agent.planner.atoms[j], value, (value) ? _trueColor : _falseColor));
+							_agent.Planner.Atoms[j], value, (value) ? _trueColor : _falseColor));
 					}
 					else
 					{
 						lines.Add(string.Format("      '<color={2}>{0}</color>' = <color={2}>{1}</color>", 
-							_agent.planner.atoms[j], value, (value) ? _trueColor : _falseColor));
+							_agent.Planner.Atoms[j], value, (value) ? _trueColor : _falseColor));
 					}
 				}
 			}
@@ -661,23 +661,23 @@ namespace Anthill.AI
 			AntAICondition aPrevConditions, ref Vector2 aNodePosition)
 		{
 			AntAICondition condCopy = aConditions.Clone();
-			condCopy.name = aAction.name;
+			condCopy.Name = aAction.Name;
 			
 			int numLines;
 			string desc = DescribePlanAction(condCopy, aPrevConditions, out numLines);
 
 			GUIStyle style;
-			if (_currentPlan.isSuccess)
+			if (_currentPlan.IsSuccess)
 			{
-				style = (aAction.name.Equals(_agent.currentPlan[0])) ? _activePlanStyle : _planStyle;
+				style = (aAction.Name.Equals(_agent.CurrentPlan[0])) ? _activePlanStyle : _planStyle;
 			}
 			else
 			{
-				style = (aAction.name.Equals(_agent.currentPlan[0])) ? _activeFailedPlanStyle : _failedPlanStyle;
+				style = (aAction.Name.Equals(_agent.CurrentPlan[0])) ? _activeFailedPlanStyle : _failedPlanStyle;
 			}
 
 			var node = AddNode(desc, 220.0f, CalcHeight(numLines), style, style, ref aNodePosition, false);
-			node.value = aAction.state;
+			node.value = aAction.State;
 			node.SetOutput(node.rect.width - 10.0f, node.rect.height * 0.5f);
 			node.SetInput(10.0f, node.rect.height * 0.5f);
 
@@ -697,20 +697,20 @@ namespace Anthill.AI
 			AntAICondition aPrevConditions, AntAIDebuggerNode aNode)
 		{
 			AntAICondition condCopy = aConditions.Clone();
-			condCopy.name = aAction.name;
-			aNode.value = aAction.state;
+			condCopy.Name = aAction.Name;
+			aNode.value = aAction.State;
 
 			int numLines;
 			aNode.title = DescribePlanAction(condCopy, aPrevConditions, out numLines);
 			aNode.rect.height = CalcHeight(numLines);
 
-			if (_currentPlan.isSuccess)
+			if (_currentPlan.IsSuccess)
 			{
-				aNode.defaultNodeStyle = (aAction.name.Equals(_agent.currentPlan[0])) ? _activePlanStyle : _planStyle;
+				aNode.defaultNodeStyle = (aAction.Name.Equals(_agent.CurrentPlan[0])) ? _activePlanStyle : _planStyle;
 			}
 			else
 			{
-				aNode.defaultNodeStyle = (aAction.name.Equals(_agent.currentPlan[0])) ? _activeFailedPlanStyle : _failedPlanStyle;
+				aNode.defaultNodeStyle = (aAction.Name.Equals(_agent.CurrentPlan[0])) ? _activeFailedPlanStyle : _failedPlanStyle;
 			}
 
 			aNode.currentStyle = aNode.defaultNodeStyle;

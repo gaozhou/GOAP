@@ -5,29 +5,29 @@ namespace Anthill.AI
 {
 	public class AntAIAgent
 	{
-		public ISense sense;                 // Органы чувств.
-		public AntAIState[] states;          // Набор доступных состояний.
-		public AntAIState currentState;      // Текущее состояние.
-		public AntAIState defaultState;      // Состояние по умолчанию.
-		public AntAICondition worldState;    // Текущее состояние.
-		public AntAIPlanner planner;         // Планировщик.
-		public AntAIPlan currentPlan;        // Текущий план.
-		public AntAICondition currentGoal;   // Текущая цель.
-		public AntAICondition defaultGoal;   // Цель по умолчанию.
+		public ISense Sense;                 // Органы чувств.
+		public AntAIState[] States;          // Набор доступных состояний.
+		public AntAIState CurrentState;      // Текущее состояние.
+		public AntAIState DefaultState;      // Состояние по умолчанию.
+		public readonly AntAICondition WorldState;    // Текущее состояние.
+		public readonly AntAIPlanner Planner;         // Планировщик.
+		public AntAIPlan CurrentPlan;        // Текущий план.
+		public AntAICondition CurrentGoal;   // Текущая цель.
+		public AntAICondition DefaultGoal;   // Цель по умолчанию.
 
 		// Если установить flase, то план будет построен, но выполнятся не будет.
-		public bool allowSetNewState;
+		public bool AllowSetNewState;
 
 		public AntAIAgent()
 		{
-			sense = null;
-			currentState = null;
-			defaultState = null;
-			worldState = new AntAICondition();
-			planner = new AntAIPlanner();
-			currentPlan = new AntAIPlan();
-			currentGoal = null;
-			allowSetNewState = true;
+			Sense = null;
+			CurrentState = null;
+			DefaultState = null;
+			WorldState = new AntAICondition();
+			Planner = new AntAIPlanner();
+			CurrentPlan = new AntAIPlan();
+			CurrentGoal = null;
+			AllowSetNewState = true;
 		}
 
 		#region Public Methods
@@ -37,7 +37,7 @@ namespace Anthill.AI
 		/// </summary>
 		public void UpdateState(float aDeltaTime)
 		{
-			currentState.Update(aDeltaTime);
+			CurrentState.Update(aDeltaTime);
 		}
 
 		/// <summary>
@@ -46,27 +46,27 @@ namespace Anthill.AI
 		public void Think()
 		{
 			// Собираем информацию о текущем состоянии игрового мира.
-			sense.GetConditions(this, worldState);
+			Sense.GetConditions(this, WorldState);
 
-			if (currentState == null)
+			if (CurrentState == null)
 			{
 				// Если текущее состояние не установлено, тогда устанавливаем дефолтное состояние.
 				SetDefaultState();
 			}
 			else
 			{
-				if (currentState.IsFinished(this, worldState))
+				if (CurrentState.IsFinished(this, WorldState))
 				{
 					// Если текущее состояние завершено или было прервано, тогда
 					// выбираем новое состояние и принудительно устанавливаем его.
-					SetState(SelectNewState(worldState), true);
+					SetState(SelectNewState(WorldState), true);
 				}
-				else if (currentState.AllowForceInterrupting)
+				else if (CurrentState.AllowForceInterrupting)
 				{
 					// Если текущее состояние по прежнему активно (не было прервано или закончено), тогда
 					// обновляем план на основе текущей обстановки мира и меняем состояние только 
 					// в том случае если состояние из обновленного плана будет отличаться от текущего.
-					SetState(SelectNewState(worldState));
+					SetState(SelectNewState(WorldState));
 				}
 			}
 		}
@@ -76,19 +76,19 @@ namespace Anthill.AI
 		/// </summary>
 		public string SelectNewState(AntAICondition aWorldState)
 		{
-			string newState = defaultState.name;
-			if (currentGoal != null)
+			var newState = DefaultState.Name;
+			if (CurrentGoal != null)
 			{
-				planner.MakePlan(ref currentPlan, aWorldState, currentGoal);
-				if (currentPlan.isSuccess || currentPlan.Count > 0)
+				Planner.MakePlan(ref CurrentPlan, aWorldState, CurrentGoal);
+				if (!CurrentPlan.IsSuccess && CurrentPlan.Count <= 0)
+					return newState;
+				var actionName = Planner.GetAction(CurrentPlan[0]).Name;
+				if (AllowSetNewState)
 				{
-					string actionName = planner.GetAction(currentPlan[0]).name;
-					if (allowSetNewState)
-					{
-						newState = planner.GetState(actionName);
-					}
+					newState = Planner.GetState(actionName);
+				}
 					
-					/* Отладочный вывод плана в консоль.
+				/* Отладочный вывод плана в консоль.
 					AntAICondition condition = aConditions.Clone();
 					string p = string.Format("Conditions: {0}\n", _planner.NameIt(condition.Description()));
 					for (int i = 0; i < _currentPlan.Count; i++)
@@ -99,7 +99,6 @@ namespace Anthill.AI
 					}
 					AntLog.Trace(p);
 					//*/
-				}
 			}
 			else
 			{
@@ -114,7 +113,7 @@ namespace Anthill.AI
 		/// </summary>
 		public void DefaultGoalIs(string aGoalName)
 		{
-			defaultGoal = FindGoal(aGoalName);
+			DefaultGoal = FindGoal(aGoalName);
 		}
 
 		/// <summary>
@@ -122,12 +121,11 @@ namespace Anthill.AI
 		/// </summary>
 		public void SetGoal(string aGoalName)
 		{
-			currentGoal = FindGoal(aGoalName);
-			if (currentGoal == null)
-			{
-				AntLog.Report("AntAIAgent", "Can't find \"{0}\" goal.", aGoalName);
-				SetDefaultGoal();
-			}
+			CurrentGoal = FindGoal(aGoalName);
+			if (CurrentGoal != null) 
+				return;
+			AntLog.Report("AntAIAgent", "Can't find \"{0}\" goal.", aGoalName);
+			SetDefaultGoal();
 		}
 
 		/// <summary>
@@ -135,9 +133,9 @@ namespace Anthill.AI
 		/// </summary>
 		public void SetDefaultGoal()
 		{
-			if (defaultGoal != null)
+			if (DefaultGoal != null)
 			{
-				currentGoal = defaultGoal;
+				CurrentGoal = DefaultGoal;
 			}
 			else
 			{
@@ -150,8 +148,8 @@ namespace Anthill.AI
 		/// </summary>
 		public void DefaultStateIs(string aStateName)
 		{
-			defaultState = FindState(aStateName);
-			if (defaultState == null)
+			DefaultState = FindState(aStateName);
+			if (DefaultState == null)
 			{
 				AntLog.Report("AntAIAgent", "Can't set \"{0}\" as <b>Default State</b> because it is not existing!", aStateName);
 			}
@@ -162,15 +160,15 @@ namespace Anthill.AI
 		/// </summary>
 		public void SetDefaultState()
 		{
-			if (currentState != null)
+			if (CurrentState != null)
 			{
-				currentState.Stop();
+				CurrentState.Stop();
 			}
 
-			AntLog.Assert(defaultState == null, "Default <b>State</b> is not defined!", true);
-			currentState = defaultState;
-			currentState.Reset();
-			currentState.Start();
+			AntLog.Assert(DefaultState == null, "Default <b>State</b> is not defined!", true);
+			CurrentState = DefaultState;
+			CurrentState.Reset();
+			CurrentState.Start();
 		}
 		
 		/// <summary>
@@ -178,20 +176,20 @@ namespace Anthill.AI
 		/// </summary>
 		public void SetState(string aStateName, bool aForce = false)
 		{
-			if (aForce || !string.Equals(currentState.name, aStateName))
+			if (!aForce && string.Equals(CurrentState.Name, aStateName)) 
+				return;
+			
+			CurrentState.Stop();
+			CurrentState = FindState(aStateName);
+			if (CurrentState != null)
 			{
-				currentState.Stop();
-				currentState = FindState(aStateName);
-				if (currentState != null)
-				{
-					currentState.Reset();
-					currentState.Start();
-				}
-				else
-				{
-					AntLog.Report("AntAIAgent", "Can't find \"{0}\" state.", aStateName);
-					SetDefaultState();
-				}
+				CurrentState.Reset();
+				CurrentState.Start();
+			}
+			else
+			{
+				AntLog.Report("AntAIAgent", "Can't find \"{0}\" state.", aStateName);
+				SetDefaultState();
 			}
 		}
 
@@ -203,8 +201,8 @@ namespace Anthill.AI
 		/// </summary>
 		private AntAIState FindState(string aStateName)
 		{
-			int index = Array.FindIndex(states, x => string.Equals(x.name, aStateName));
-			return (index >= 0 && index < states.Length) ? states[index] : null;
+			var index = Array.FindIndex(States, x => string.Equals(x.Name, aStateName));
+			return (index >= 0 && index < States.Length) ? States[index] : null;
 		}
 
 		/// <summary>
@@ -212,8 +210,8 @@ namespace Anthill.AI
 		/// </summary>
 		private AntAICondition FindGoal(string aGoalName)
 		{
-			int index = planner.goals.FindIndex(x => x.name.Equals(aGoalName));
-			return (index >= 0 && index < planner.goals.Count) ? planner.goals[index] : null;
+			var index = Planner.Goals.FindIndex(x => x.Name.Equals(aGoalName));
+			return (index >= 0 && index < Planner.Goals.Count) ? Planner.Goals[index] : null;
 		}
 
 		#endregion

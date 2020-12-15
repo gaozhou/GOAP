@@ -31,7 +31,7 @@ namespace Game.AI.BotOne
 
 		public override void Update(float aDeltaTime)
 		{
-			_isFinished = OnMove();
+			Finished = OnMove();
 		}
 	}
 }

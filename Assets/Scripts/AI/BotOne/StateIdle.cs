@@ -26,7 +26,7 @@ namespace Game.AI.BotOne
 		{
 			// Если время истекло, то задача выполнена.
 			_delay -= aDeltaTime;
-			_isFinished = (_delay < 0.0f);
+			Finished = (_delay < 0.0f);
 		}
 	}
 }

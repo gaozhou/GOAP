@@ -36,13 +36,13 @@ namespace Game.AI.BotOne
 			control.Agent = new AntAIAgent();
 			
 			// Обертка для всех «органов чувств».
-			control.Agent.sense = new BotSense(gameObject);
+			control.Agent.Sense = new BotSense(gameObject);
 
 			// Обертка для принятия решений (сценарий поведения).
-			control.Agent.planner.LoadScenario(scenario);
+			control.Agent.Planner.LoadScenario(scenario);
 
 			// Регистриуем возможные состояния.
-			control.Agent.states = new AntAIState[] 
+			control.Agent.States = new AntAIState[] 
 			{
 				new StateIdle(gameObject),
 				new StateSearchGun(gameObject),

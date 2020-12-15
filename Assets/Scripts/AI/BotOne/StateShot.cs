@@ -26,7 +26,7 @@ namespace Game.AI.BotOne
 		public override void Update(float aDeltaTime)
 		{
 			_delay -= aDeltaTime;
-			_isFinished = (_delay <= 0.0f);
+			Finished = (_delay <= 0.0f);
 		}
 	}
 }

@@ -4,13 +4,8 @@ namespace Anthill.AI
 {
 	public class AntAIPlan
 	{	
-		public bool isSuccess;
-		private List<string> _actions;
-
-		public AntAIPlan()
-		{
-			_actions = new List<string>();
-		}
+		public bool IsSuccess;
+		private readonly List<string> _actions = new List<string>();
 
 		public void Reset()
 		{

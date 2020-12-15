@@ -2,25 +2,18 @@ namespace Anthill.AI
 {
 	public class AntAICondition
 	{
-		public string name;
-		public bool[] values;
-		public bool[] mask;
+		public string Name;
+		public int Values;
+		public int Mask;
+		// public bool[] values;
+		// public bool[] mask;
 
 		private AntAIPlanner _currentPlanner;
 
-		public AntAICondition()
-		{
-			values = new bool[AntAIPlanner.MAX_ATOMS];
-			mask = new bool[AntAIPlanner.MAX_ATOMS];
-		}
-
 		public void Clear()
 		{
-			for (int i = 0, n = AntAIPlanner.MAX_ATOMS; i < n; i++)
-			{
-				values[i] = false;
-				mask[i] = false;
-			}
+			Values = 0;
+			Mask = 0;
 		}
 
 		public void BeginUpdate(AntAIPlanner aPlanner)
@@ -40,10 +33,8 @@ namespace Anthill.AI
 
 		public bool Has(AntAIPlanner aPlanner, string aAtomName)
 		{
-			int index = aPlanner.GetAtomIndex(aAtomName);
-			return (index >= 0 && index < values.Length) 
-				? values[index] 
-				: false;
+			var index = aPlanner.GetAtomIndex(aAtomName);
+			return  (index >= 0 && index < AntAIPlanner.MAX_ATOMS) && (Values & 1 << index) > 0;
 		}
 
 		public bool Set(string aAtomName, bool aValue)
@@ -58,21 +49,21 @@ namespace Anthill.AI
 
 		public bool Set(int aIndex, bool aValue)
 		{
-			if (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS)
-			{
-				values[aIndex] = aValue;
-				mask[aIndex] = true;
-				return true;
-			}
-			return false;
+			if (aIndex < 0 || aIndex >= AntAIPlanner.MAX_ATOMS)
+				return false;
+			
+			Values &= ~(1 << aIndex);
+			Values |= aValue ? 1 << aIndex : 0;
+			Mask |= 1 << aIndex;
+			return true;
 		}
 
 		public int Heuristic(AntAICondition aOther)
 		{
-			int dist = 0;
-			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
+			var dist = 0;
+			for (var i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				if (aOther.mask[i] && values[i] != aOther.values[i])
+				if ((aOther.Mask & (1 << i)) > 0 && (Values & (1 << i)) != (aOther.Values & (1 << i)))
 				{
 					dist++;
 				}
@@ -82,9 +73,9 @@ namespace Anthill.AI
 
 		public bool Match(AntAICondition aOther)
 		{
-			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
+			for (var i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				if ((mask[i] && aOther.mask[i]) && (values[i] != aOther.values[i])) 
+				if ((Mask & (1 << i)) > 0 && (aOther.Mask & (1 << i)) > 0 && (Values & (1 << i)) != (aOther.Values & (1 << i)))
 				{
 					return false;
 				}
@@ -94,55 +85,41 @@ namespace Anthill.AI
 
 		public bool GetMask(int aIndex)
 		{
-			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) ? mask[aIndex] : false;
+			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) && (Mask & (1 << aIndex)) > 0;
 		}
 
 		public bool GetValue(int aIndex)
 		{
-			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) ? values[aIndex] : false;
+			return (aIndex >= 0 && aIndex < AntAIPlanner.MAX_ATOMS) && (Values & (1 << aIndex)) > 0;
 		}
 
 		public AntAICondition Clone()
 		{
-			AntAICondition clone = new AntAICondition();
-			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
+			return new AntAICondition
 			{
-				clone.values[i] = values[i];
-				clone.mask[i] = mask[i];
-			}
-			return clone;
+				Values = Values,
+				Mask = Mask,
+			};
 		}
 
 		public void Act(AntAICondition aPost)
 		{
-			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
-			{
-				mask[i] = mask[i] || aPost.mask[i];
-				if (aPost.mask[i])
-				{
-					values[i] = aPost.values[i];
-				}
-			}
+			Mask |= aPost.Mask;
+			Values &= ~aPost.Mask;
+			Values |= aPost.Mask & aPost.Values;
 		}
 
 		public bool Equals(AntAICondition aCondition)
 		{
-			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
-			{
-				if (values[i] != aCondition.values[i])
-				{
-					return false;
-				}
-			}
-			return true;
+			return Values == aCondition.Values;
 		}
 
 		public bool[] Description()
 		{
-			bool[] result = new bool[AntAIPlanner.MAX_ATOMS];
-			for (int i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
+			var result = new bool[AntAIPlanner.MAX_ATOMS];
+			for (var i = 0; i < AntAIPlanner.MAX_ATOMS; i++)
 			{
-				result[i] = mask[i] && values[i];
+				result[i] = (Mask & Values & (1 << i)) > 0;
 			}
 			return result;
 		}

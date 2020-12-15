@@ -4,18 +4,18 @@ namespace Anthill.AI
 {
 	public class AntAIState
 	{
-		public string name;
+		public readonly string Name;
 
-		protected List<string> _interruptions;
-		protected bool _isFinished;
+		private readonly List<string> _interruptions;
+		protected bool Finished;
 		
 		public bool AllowForceInterrupting { get; protected set; }
 
 		public AntAIState(string aName)
 		{
-			name = aName;
+			Name = aName;
 			_interruptions = new List<string>();
-			_isFinished = false;
+			Finished = false;
 			AllowForceInterrupting = true;
 		}
 
@@ -41,20 +41,19 @@ namespace Anthill.AI
 
 		public virtual void Reset()
 		{
-			_isFinished = false;
+			Finished = false;
 		}
 
 		public bool IsFinished(AntAIAgent aAgent, AntAICondition aWorldState)
 		{
-			return (_isFinished || OverlapInterrupts(aAgent.planner, aWorldState));
+			return (Finished || OverlapInterrupts(aAgent.Planner, aWorldState));
 		}
 
 		public bool OverlapInterrupts(AntAIPlanner aPlanner, AntAICondition aConditions)
 		{
-			int index = -1;
 			for (int i = 0, n = _interruptions.Count; i < n; i++)
 			{
-				index = aPlanner.GetAtomIndex(_interruptions[i]);
+				var index = aPlanner.GetAtomIndex(_interruptions[i]);
 				if (aConditions.GetValue(index))
 				{
 					return true;
