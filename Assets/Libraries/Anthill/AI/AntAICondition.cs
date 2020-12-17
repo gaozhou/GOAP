@@ -5,8 +5,6 @@ namespace Anthill.AI
 		public string Name;
 		private int _values;
 		private int _mask;
-		// public bool[] values;
-		// public bool[] mask;
 
 		private AntAIPlanner _currentPlanner;
 

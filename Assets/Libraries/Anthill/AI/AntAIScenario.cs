@@ -85,15 +85,9 @@ namespace Anthill.AI
 			return (index >= 0 && index < list.Length) ? list[index].id : -1;
 		}
 
-		public string this[int aIndex]
-		{
-			get { return (aIndex >= 0 && aIndex < list.Length) ? list[aIndex].name : null; }
-		}
+		public string this[int aIndex] => aIndex >= 0 && aIndex < list.Length ? list[aIndex].name : null;
 
-		public int Count
-		{
-			get { return list.Length; }
-		}
+		public int Count => list.Length;
 	}
 
 	[Serializable]

@@ -5,17 +5,17 @@ namespace Anthill.AI
 {
 	public class AntAIAgent
 	{
-		public ISense Sense;                 // Органы чувств.
-		public AntAIState[] States;          // Набор доступных состояний.
-		public AntAIState CurrentState;      // Текущее состояние.
-		public AntAIState DefaultState;      // Состояние по умолчанию.
-		public readonly AntAICondition WorldState;    // Текущее состояние.
-		public readonly AntAIPlanner Planner;         // Планировщик.
-		public AntAIPlan CurrentPlan;        // Текущий план.
-		public AntAICondition CurrentGoal;   // Текущая цель.
-		public AntAICondition DefaultGoal;   // Цель по умолчанию.
+		public ISense Sense;                 // 传感器
+		public AntAIState[] States;          // 可用状态集合
+		public AntAIState CurrentState;      // 当前状态
+		public AntAIState DefaultState;      // 默认状态
+		public readonly AntAICondition WorldState;    // 世界当前状态
+		public readonly AntAIPlanner Planner;         // 调度程序
+		public AntAIPlan CurrentPlan;        // 当前计划
+		public AntAICondition CurrentGoal;   // 当前目标
+		public AntAICondition DefaultGoal;   // 默认目标
 
-		// Если установить flase, то план будет построен, но выполнятся не будет.
+		// 如果设置flase，则将构建计划，但不会执行该计划。
 		public bool AllowSetNewState;
 
 		public AntAIAgent()
@@ -33,7 +33,7 @@ namespace Anthill.AI
 		#region Public Methods
 
 		/// <summary>
-		/// Обновление текущего состояния.
+		/// 更新当前状态
 		/// </summary>
 		public void UpdateState(float aDeltaTime)
 		{
@@ -41,11 +41,11 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Мозговой штурм.
+		/// 思考
 		/// </summary>
 		public void Think()
 		{
-			// Собираем информацию о текущем состоянии игрового мира.
+			// 收集有关游戏世界当前状态的信息
 			Sense.GetConditions(this, WorldState);
 
 			if (CurrentState == null)
@@ -109,7 +109,7 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Определяет какая цель будет целью по умолчанию.
+		/// 设置默认目标状态
 		/// </summary>
 		public void DefaultGoalIs(string aGoalName)
 		{
@@ -117,7 +117,7 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Устанавливает указанную цель как текущую.
+		/// 设置指定目标
 		/// </summary>
 		public void SetGoal(string aGoalName)
 		{
@@ -129,7 +129,7 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Устанавливает цель по умолчанию как текущее.
+		/// 设置默认目标
 		/// </summary>
 		public void SetDefaultGoal()
 		{
@@ -172,7 +172,7 @@ namespace Anthill.AI
 		}
 		
 		/// <summary>
-		/// Устанавливает указанное состояние как текущее.
+		/// 设置当前状态。
 		/// </summary>
 		public void SetState(string aStateName, bool aForce = false)
 		{
@@ -201,8 +201,8 @@ namespace Anthill.AI
 		/// </summary>
 		private AntAIState FindState(string aStateName)
 		{
-			var index = Array.FindIndex(States, x => string.Equals(x.Name, aStateName));
-			return (index >= 0 && index < States.Length) ? States[index] : null;
+			var index = Array.FindIndex(States, a => string.Equals(a.Name, aStateName));
+			return index >= 0 && index < States.Length ? States[index] : null;
 		}
 
 		/// <summary>

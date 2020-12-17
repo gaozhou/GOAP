@@ -26,17 +26,17 @@ namespace Anthill.AI
 
 		public virtual void Start()
 		{
-			// Вызывается перед началом выполнения задачи.
+			// 在任务开始之前调用。
 		}
 
 		public virtual void Update(float aDeltaTime)
 		{
-			// Вызывается каждый игровой цикл пока задача активна.
+			// 任务处于活动状态时调用每个游戏循环。
 		}
 
 		public virtual void Stop()
 		{
-			// Вызывается после завершения выполнения задачи (даже если задача была прервана).
+			// 在任务完成执行后调用（即使任务已中断）。
 		}
 
 		public virtual void Reset()

@@ -2,11 +2,11 @@ namespace Anthill.AI
 {
 	public class AntAIAction
 	{
-		public int Cost;            // Цена действия.
-		public readonly string Name;         // Имя действия.
-		public string State;        // Имя состояния связанного с этим действием.
-		public readonly AntAICondition Pre;  // Предстоящие условия.
-		public readonly AntAICondition Post; // Последующие условия.
+		public int Cost;            		 // 消耗
+		public readonly string Name;         // 名字
+		public string State;        		 // 关联的状态
+		public readonly AntAICondition Pre;  // 前置条件
+		public readonly AntAICondition Post; // 后置条件
 
 		public AntAIAction(string aName, int aCost = 1)
 		{

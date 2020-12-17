@@ -109,7 +109,7 @@ namespace Anthill.AI
 		public string GetState(string aActionName)
 		{
 			var action = FindAction(aActionName);
-			AntLog.Assert(action == null, string.Format("Action \"{0}\" not registered!", aActionName), true);
+			AntLog.Assert(action == null, $"Action \"{aActionName}\" not registered!", true);
 			return action.State;
 		}
 
@@ -119,7 +119,7 @@ namespace Anthill.AI
 			for (int i = 0, n = Atoms.Count; i < n; i++)
 			{
 				//result += (aBits[i] ? atoms[i].ToUpper() : atoms[i].ToLower()) + " ";
-				result = aBits[i] ? string.Format("{0} <color=green>{1}</color>", result, Atoms[i]) : string.Concat(result, " ", Atoms[i]);
+				result = aBits[i] ? $"{result} <color=green>{Atoms[i]}</color>" : string.Concat(result, " ", Atoms[i]);
 			}
 			return result;
 		}
@@ -136,8 +136,7 @@ namespace Anthill.AI
 			for (int i = 0, n = Actions.Count; i < n; i++)
 			{
 				var action = Actions[i];
-				result.Append(string.Format("Action: '{0}' State: '{1}' Cost: {2}\n", 
-					action.Name, action.State, action.Cost));
+				result.Append($"Action: '{action.Name}' State: '{action.State}' Cost: {action.Cost}\n");
 				result.Append("  Preconditions:\n");
 				var value = false;
 				for (var j = 0; j < MAX_ATOMS; j++)
@@ -184,7 +183,7 @@ namespace Anthill.AI
 
 		public AntAICondition FindGoal(string aGoalName)
 		{
-			return Goals.Find(x => x.Name.Equals(aGoalName));
+			return Goals.Find(a => a.Name.Equals(aGoalName));
 		}
 
 		public AntAIAction GetAction(string aActionName)
@@ -241,10 +240,7 @@ namespace Anthill.AI
 					// Plan is found!
 					ReconstructPlan(ref aPlan, closed, current);
 					aPlan.IsSuccess = true;
-					if (EventPlanUpdated != null)
-					{
-						EventPlanUpdated(aPlan);
-					}
+					EventPlanUpdated?.Invoke(aPlan);
 
 					return;
 				}
@@ -294,10 +290,7 @@ namespace Anthill.AI
 			ReconstructPlan(ref aPlan, closed, current);
 			aPlan.IsSuccess = false;
 
-			if (EventPlanUpdated != null)
-			{
-				EventPlanUpdated(aPlan);
-			}
+			EventPlanUpdated?.Invoke(aPlan);
 		}
 
 		#region Private Methods
@@ -327,11 +320,11 @@ namespace Anthill.AI
 			return -1;
 		}
 
-		private void ReconstructPlan(ref AntAIPlan aPlan, List<AntAINode> aClosed, AntAINode aGoal)
+		private void ReconstructPlan(ref AntAIPlan aPlan, IList<AntAINode> aClosed, AntAINode aGoal)
 		{
 			aPlan.Reset();
 			var current = aGoal;
-			while (current != null && current.Parent != null)
+			while (current?.Parent != null)
 			{
 				aPlan.Insert(current.Action);
 				var index = FindEqual(aClosed, current.Parent);

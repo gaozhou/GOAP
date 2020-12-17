@@ -16,7 +16,7 @@ namespace Anthill.AI
 
 		public string GetKey(int aIndex)
 		{
-			return (aIndex >= 0 && aIndex < _dict.Count) ? _dict.ElementAt(aIndex).Key : null;
+			return aIndex >= 0 && aIndex < _dict.Count ? _dict.ElementAt(aIndex).Key : null;
 		}
 
 		public bool Contains(string aKey)
@@ -31,10 +31,7 @@ namespace Anthill.AI
 			
 			var result = _dict[aKey];
 			_dict.Remove(aKey);
-			if (EventPropertyRemoved != null)
-			{
-				EventPropertyRemoved(aKey, result);
-			}
+			EventPropertyRemoved?.Invoke(aKey, result);
 			return result;
 		}
 
@@ -48,10 +45,7 @@ namespace Anthill.AI
 
 		public AntAIBlackboardProp this[int aIndex]
 		{
-			get
-			{
-				return _dict.ElementAt(aIndex).Value;
-			}
+			get => _dict.ElementAt(aIndex).Value;
 			set
 			{
 				var key = _dict.ElementAt(aIndex).Key;
@@ -70,10 +64,7 @@ namespace Anthill.AI
 
 				var prop = new AntAIBlackboardProp();
 				_dict.Add(aKey, prop);
-				if (EventPropertyAdded != null)
-				{
-					EventPropertyAdded(aKey, prop);
-				}
+				EventPropertyAdded?.Invoke(aKey, prop);
 
 				return prop;
 			}
@@ -86,28 +77,11 @@ namespace Anthill.AI
 				else
 				{
 					_dict.Add(aKey, value);
-					if (EventPropertyAdded != null)
-					{
-						EventPropertyAdded(aKey, value);
-					}
+					EventPropertyAdded?.Invoke(aKey, value);
 				}
 			}
 		}
-
-		public int Count
-		{
-			get
-			{
-				return _dict.Count;
-				// var count = 0;
-				// foreach (var prop in _dict)
-				// {
-				// 	count++;
-				// }
-				// return count;
-			}
-		}
-
+		public int Count => _dict.Count;
 		#endregion
 	}
 }

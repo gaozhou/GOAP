@@ -5,6 +5,7 @@ namespace Anthill.AI
 	public class AntAIPlan
 	{	
 		public bool IsSuccess;
+		
 		private readonly List<string> _actions = new List<string>();
 
 		public void Reset()
@@ -17,14 +18,8 @@ namespace Anthill.AI
 			_actions.Insert(0, aValue);
 		}
 
-		public string this[int aIndex]
-		{
-			get { return (aIndex >= 0 && aIndex < _actions.Count) ? _actions[aIndex] : null; }
-		}
+		public string this[int aIndex] => aIndex >= 0 && aIndex < _actions.Count ? _actions[aIndex] : null;
 
-		public int Count
-		{
-			get { return _actions.Count; }
-		}
+		public int Count => _actions.Count;
 	}
 }

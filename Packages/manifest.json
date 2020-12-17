@@ -1,4 +1,15 @@
 {
+    "scopedRegistries": [
+      {
+        "name": "Carbon",
+        "url": "http://192.168.0.123:4873/",
+        "scopes": [
+          "com.carbon",
+          "com.catlib",
+          "com.fluid"
+        ]
+      }
+    ],
   "dependencies": {
     "com.unity.ads": "2.0.8",
     "com.unity.analytics": "3.2.3",

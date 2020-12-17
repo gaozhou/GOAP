@@ -79,118 +79,81 @@ namespace Anthill.AI
 
 		public string Value
 		{
-			get { return _strValue; }
+			get => _strValue;
 			set
-			{ 
-				if (EventChanging != null)
-				{
-					EventChanging(this);
-				}
+			{
+				EventChanging?.Invoke(this);
 
 				Type = ValueType.String;
 				_strValue = value;
-				if (EventChanged != null)
-				{
-					EventChanged(this);
-				}
+				EventChanged?.Invoke(this);
 			}
 		}
 
 		public float AsFloat
 		{
-			get { return _floatValue; }
+			get => _floatValue;
 			set
 			{
-				if (EventChanging != null)
-				{
-					EventChanging(this);
-				}
+				EventChanging?.Invoke(this);
 
 				Type = ValueType.Float;
 				_floatValue = value;
-				if (EventChanged != null)
-				{
-					EventChanged(this);
-				}
+				EventChanged?.Invoke(this);
 			}
 		}
 
 		public int AsInt
 		{
-			get { return _intValue; }
+			get => _intValue;
 			set 
 			{
-				if (EventChanging != null)
-				{
-					EventChanging(this);
-				}
+				EventChanging?.Invoke(this);
 
 				Type = ValueType.Int;
 				_intValue = value;
-				if (EventChanged != null)
-				{
-					EventChanged(this);
-				}
+				EventChanged?.Invoke(this);
 			}
 		}
 
 		public bool AsBool
 		{
-			get { return _boolValue; }
+			get => _boolValue;
 			set
 			{
-				if (EventChanging != null)
-				{
-					EventChanging(this);
-				}
+				EventChanging?.Invoke(this);
 
 				Type = ValueType.Bool;
 				_boolValue = value;
-				if (EventChanged != null)
-				{
-					EventChanged(this);
-				}
+				EventChanged?.Invoke(this);
 			}
 		}
 
 		public Vector2 AsVector2
 		{
-			get { return _vec2Value; }
+			get => _vec2Value;
 			set
 			{
-				if (EventChanging != null)
-				{
-					EventChanging(this);
-				}
+				EventChanging?.Invoke(this);
 
 				Type = ValueType.Vec2;
 				_vec2Value = value;
-				if (EventChanged != null)
-				{
-					EventChanged(this);
-				}
+				EventChanged?.Invoke(this);
 			}
 		}
 
 		public Vector3 AsVector3
 		{
-			get { return _vec3Value; }
+			get => _vec3Value;
 			set
 			{
-				if (EventChanging != null)
-				{
-					EventChanging(this);
-				}
+				EventChanging?.Invoke(this);
 
 				Type = ValueType.Vec3;
 				_vec3Value = value;
-				if (EventChanged != null)
-				{
-					EventChanged(this);
-				}
+				EventChanged?.Invoke(this);
 			}
 		}
-
 		#endregion
 	}
 }

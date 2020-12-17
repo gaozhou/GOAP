@@ -1,15 +1,15 @@
 namespace Anthill.AI
 {
 	/// <summary>
-	/// Узел данных сети мировых состояний.
+	/// 世界状态节点。
 	/// </summary>
 	public class AntAINode
 	{
-		public AntAICondition Parent; // Состояние из которого мы пришли.
-		public AntAICondition World;  // Состояние мира для этого узла.
-		public string Action;         // Действие которое привело к этому узлу.
-		public int Heuristic;         // Остаточная стоимость.
-		public int Cost;              // Стоимость узла.
-		public int Sum;               // Сумма heruistic и cost.
+		public AntAICondition Parent; // 前置状态
+		public AntAICondition World;  // 此节点的世界状态
+		public string Action;         // 该节点的动作
+		public int Heuristic;         // 节点价值
+		public int Cost;              // 节点成本
+		public int Sum;               // 当前节点成本的总和
 	}
 }
