@@ -198,7 +198,7 @@ namespace Anthill.AI
 
 		public AntAIAction FindAction(string aActionName)
 		{
-			return Actions.Find(x => (x.Name != null && x.Name.Equals(aActionName)));
+			return Actions.Find(a => a.Name != null && a.Name.Equals(aActionName));
 		}
 
 		public void MakePlan(ref AntAIPlan aPlan, AntAICondition aCurrent, AntAICondition aGoal)

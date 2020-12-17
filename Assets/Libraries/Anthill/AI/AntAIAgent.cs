@@ -50,29 +50,26 @@ namespace Anthill.AI
 
 			if (CurrentState == null)
 			{
-				// Если текущее состояние не установлено, тогда устанавливаем дефолтное состояние.
+				// 如果未设置当前状态，则设置默认状态
 				SetDefaultState();
 			}
 			else
 			{
 				if (CurrentState.IsFinished(this, WorldState))
 				{
-					// Если текущее состояние завершено или было прервано, тогда
-					// выбираем новое состояние и принудительно устанавливаем его.
+					// 如果当前状态已完成或已被中断，则选择一个新状态并强制执行它。
 					SetState(SelectNewState(WorldState), true);
 				}
 				else if (CurrentState.AllowForceInterrupting)
 				{
-					// Если текущее состояние по прежнему активно (не было прервано или закончено), тогда
-					// обновляем план на основе текущей обстановки мира и меняем состояние только 
-					// в том случае если состояние из обновленного плана будет отличаться от текущего.
+					// 如果当前状态仍处于活动状态（未中断或未完成），则根据世界当前情况更新计划，仅更改状态如果更新计划的状态与当前计划不同。
 					SetState(SelectNewState(WorldState));
 				}
 			}
 		}
 
 		/// <summary>
-		/// Выбирает новое состояние на основе текущего состояния мира.
+		/// 根据世界的当前状态选择一个新状态。
 		/// </summary>
 		public string SelectNewState(AntAICondition aWorldState)
 		{
@@ -144,7 +141,7 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Определяет какое из состояний будет состоянием по умолчанию.
+		///  设置默认状态名字
 		/// </summary>
 		public void DefaultStateIs(string aStateName)
 		{
@@ -156,15 +153,11 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Устанавливает состояение по умолчанию как текущее.
+		/// 设置到默认状态
 		/// </summary>
 		public void SetDefaultState()
 		{
-			if (CurrentState != null)
-			{
-				CurrentState.Stop();
-			}
-
+			CurrentState?.Stop();
 			AntLog.Assert(DefaultState == null, "Default <b>State</b> is not defined!", true);
 			CurrentState = DefaultState;
 			CurrentState.Reset();
@@ -197,7 +190,7 @@ namespace Anthill.AI
 		#region Private Methods
 
 		/// <summary>
-		/// Ищет зарегистрированное состояние по имени.
+		/// 查找状态
 		/// </summary>
 		private AntAIState FindState(string aStateName)
 		{
@@ -206,7 +199,7 @@ namespace Anthill.AI
 		}
 
 		/// <summary>
-		/// Ищет зарегистрированную цель по имени.
+		/// 查找目标
 		/// </summary>
 		private AntAICondition FindGoal(string aGoalName)
 		{
